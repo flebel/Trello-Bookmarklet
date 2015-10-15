@@ -7,6 +7,7 @@ This is a <a href="http://en.wikipedia.org/wiki/Bookmarklet">bookmarklet</a> you
  - FogBugz cases
  - JIRA issues
  - GitHub issues and commits
+ - UserVoice tickets
  - The selected text from an arbitrary URL
  - ... more?  I'm happy to take pull requests that add support for other websites!
 
