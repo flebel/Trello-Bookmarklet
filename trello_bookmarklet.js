@@ -1,5 +1,10 @@
 (function(window){
   var $;
+  var jQuery_page
+  var jQuery_trello_bookmarklet;
+
+  // Keep track of the jQuery included in the page
+  $ = window.$ = jQuery_page = window.jQuery;
 
   var get_est_jira_time = function() {
       var jira_time = $('#tt_single_values_orig').text().trim();
@@ -110,33 +115,37 @@
 
     // Create the card
     if(name) {
-      Trello.post("lists/" + idList + "/cards", { 
-        name: name, 
-        desc: desc
-      }, function(card){
-        // Display a little notification in the upper-left corner with a link to the card
-        // that was just created
-        var $cardLink = $("<a>")
-        .attr({
-          href: card.url,
-          target: "card"
-        })
-        .text("Created a Trello Card")
-        .css({
-          position: "absolute",
-          left: 0,
-          top: 0,
-          padding: "4px",
-          border: "1px solid #000",
-          background: "#fff",
-          "z-index": 1e3
-        })
-        .appendTo("body")
+      // Use newer (2.x) jQuery version to avoid CORS errors
+      (function(jQuery) {
+        Trello.post("lists/" + idList + "/cards", {
+          name: name,
+          desc: desc
+        }, function(card){
+          // Display a little notification in the upper-left corner with a link to the card
+          // that was just created
+          var $cardLink = $("<a>")
+          .attr({
+            href: card.url,
+            target: "card"
+          })
+          .text("Created a Trello Card")
+          .css({
+            position: "absolute",
+            left: 0,
+            top: 0,
+            padding: "4px",
+            border: "1px solid #000",
+            background: "#fff",
+            "z-index": 1e3
+          })
+          .appendTo("body")
 
-        setTimeout(function(){
-          $cardLink.fadeOut(3000);
-        }, 5000)
-      })
+          setTimeout(function(){
+            $cardLink.fadeOut(3000);
+          }, 5000)
+        })
+        $ = window.$ = window.jQuery = jQuery_page;
+      }(jQuery_trello_bookmarklet))
     }
   }
 
@@ -241,19 +250,21 @@
   waterfall([
     // Load jQuery
     function(next) {
-      if(window.jQuery) {
+      if (parseInt(window.jQuery.fn.jquery.split(".")[0]) >= 2) {
+        jQuery_trello_bookmarklet = $;
         next(null);
       } else {
         var script = document.createElement("script");
-        script.src = "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js";
         script.onload = next;
+        script.onreadystatechange = next;
+        script.src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js";
         document.getElementsByTagName("head")[0].appendChild(script);
+
+        jQuery_trello_bookmarklet = jQuery.noConflict(true);
       }
     },
     // Get the user's App Key, either from local storage, or by prompting them to retrieve it
     function(ev, next) {
-      $ = window.jQuery;
-
       var appKey = store(appKeyName) || window[appKeyName];
       if(appKey && appKey.length == 32) {
         next(appKey);
@@ -323,4 +334,6 @@
     // Run the user portion
     run
   ]);
+  // Reset jQuery to the version included in the page
+  $ = window.$ = window.jQuery = jQuery_page;
 })(window);
