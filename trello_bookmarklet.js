@@ -23,47 +23,57 @@
     // Default description is the URL of the page we're looking at
     var desc = location.href;
 
-    if(window.goBug) {
+    var fogbugz_case = window.goBug,
+        github_commit = $("#all_commit_comments").length,
+        github_issue = $("#show_issue").length,
+        gmail_email = $('h1 .hP').length,
+        jira_5_1_or_newer = $("#jira").length,
+        jira_older_installation = $("#issue_header_summary").length,
+        redmine_issue = jQuery('head meta[content=Redmine]').length,
+        requesttracker_ticket = $('#header h1').length,
+        uservoice_ticket = $('body[uv-sheet-container]').length;
+
+    if (fogbugz_case) {
 
       // We're looking at a FogBugz case
       name = goBug.ixBug + ": " + goBug.sTitle
 
-    } else if ($("#issue_header_summary").length){
+    } else if (jira_older_installation){
 
       // We're looking at a JIRA case in an older JIRA installation
       name = $("#key-val").text() + ": " + $("#issue_header_summary").text();
 
-    } else if ($("#jira").length){
+    } else if (jira_5_1_or_newer){
 
       // We're looking at a 5.1+ JIRA case
       name = $("#key-val").text() + ": " + $("#summary-val").text() +  get_est_jira_time();
 
-    } else if ($("#show_issue").length) {
+    } else if (github_issue) {
 
       // We're looking at a GitHub issue
       name = $("#show_issue .number strong").text() + " " + $("#show_issue .discussion-topic-title").text();
 
-    } else if ($("#all_commit_comments").length) {
+    } else if (github_commit) {
 
       // We're looking at a GitHub commit
       name = $(".js-current-repository").text().trim() + ": " + $(".commit .commit-title").text().trim();
       
-    } else if (jQuery('head meta[content=Redmine]').length) {
+    } else if (redmine_issue) {
       
       // We're looking at a redmine issue
       name = $("#content h2:first").text().trim() + ": " + $("#content h3:first").text().trim();
 
-    } else if ($('#header h1').length) {
+    } else if (requesttracker_ticket) {
 
         // We're looking at a RequestTracker (RT) ticket
         name = $('#header h1').text().trim();
 
-    } else if ($('h1 .hP').length){
+    } else if (gmail_email){
         
         // we're looking at an email in Gmail
         name = $('h1 .hP').text().trim();
     
-    } else if ($('body[uv-sheet-container]').length) {
+    } else if (uservoice_ticket) {
 
         // We're looking at UserVoice tickets
         var ticket_number_regex = /.*\/admin\/tickets\/(\d+).*/;
@@ -121,6 +131,16 @@
           name: name,
           desc: desc
         }, function(card){
+          // Perform a really swell extra step if we're on a UserVoice ticket
+          if (uservoice_ticket) {
+            Trello.post("cards/" + card.id + "/stickers", {
+              image: "55f31772076c0979149588f2",
+              top: 0,
+              left: 0,
+              zIndex: 0
+            });
+          }
+
           // Display a little notification in the upper-left corner with a link to the card
           // that was just created
           var $cardLink = $("<a>")
@@ -144,6 +164,7 @@
             $cardLink.fadeOut(3000);
           }, 5000)
         })
+
         $ = window.$ = window.jQuery = jQuery_page;
       }(jQuery_trello_bookmarklet))
     }
