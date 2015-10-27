@@ -23,7 +23,8 @@
     // Default description is the URL of the page we're looking at
     var desc = location.href;
 
-    var fogbugz_case = window.goBug,
+    var bugsnag_error = $('meta[content="Bugsnag"').length,
+        fogbugz_case = window.goBug,
         github_commit = $("#all_commit_comments").length,
         github_issue = $("#show_issue").length,
         gmail_email = $('h1 .hP').length,
@@ -33,7 +34,13 @@
         requesttracker_ticket = $('#header h1').length,
         uservoice_ticket = $('body[uv-sheet-container]').length;
 
-    if (fogbugz_case) {
+    if (bugsnag_error) {
+
+      name = $('#main-content > header > h4').text();
+      desc = "Link to exception: " + location.href;
+      desc += "\n" + $('.Stacktrace-raw').text();
+
+    } else if (fogbugz_case) {
 
       // We're looking at a FogBugz case
       name = goBug.ixBug + ": " + goBug.sTitle
