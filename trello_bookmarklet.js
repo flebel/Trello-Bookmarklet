@@ -68,7 +68,7 @@
         // We're looking at UserVoice tickets
         var ticket_number_regex = /.*\/admin\/tickets\/(\d+).*/;
         var ticket_number = ticket_number_regex.exec(location.href);
-        name = "[DoC #" + ticket_number[1] + "] " + $('h1.ticket-subject-header').text().trim();
+        name = "#" + ticket_number[1] + " " + $('h1.ticket-subject-header').text().trim();
         desc = "Link to Ticket: " + location.href;
         desc += "\nReported by: " +  window.currentSupportAgent.displayName;
 
