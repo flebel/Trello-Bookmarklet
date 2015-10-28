@@ -1,6 +1,6 @@
 (function(window){
   var $;
-  var jQuery_page
+  var jQuery_page;
   var jQuery_trello_bookmarklet;
 
   // Keep track of the jQuery included in the page
