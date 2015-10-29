@@ -38,7 +38,8 @@
 
       name = "[BUGSNAG] " + $('#main-content > header > h4').text();
       desc = "Link to exception: " + location.href;
-      desc += "\n" + $('.Stacktrace-raw').text();
+      desc += "\nStack trace (partial):\n\n\t"; // Append a tab to force code formatting of the stack trace
+      desc += $('.Stacktrace-raw textarea').text().substring(0, 1500);
 
     } else if (fogbugz_case) {
 
@@ -142,6 +143,13 @@
           if (uservoice_ticket) {
             Trello.post("cards/" + card.id + "/stickers", {
               image: "55f31772076c0979149588f2",
+              top: 0,
+              left: 0,
+              zIndex: 0
+            });
+          } else if (bugsnag_error) {
+            Trello.post("cards/" + card.id + "/stickers", {
+              image: "55f3175bb50dbfde87672fb8",
               top: 0,
               left: 0,
               zIndex: 0
