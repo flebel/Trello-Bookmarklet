@@ -36,7 +36,7 @@
 
     if (bugsnag_error) {
 
-      name = $('#main-content > header > h4').text();
+      name = "[BUGSNAG] " + $('#main-content > header > h4').text();
       desc = "Link to exception: " + location.href;
       desc += "\n" + $('.Stacktrace-raw').text();
 
